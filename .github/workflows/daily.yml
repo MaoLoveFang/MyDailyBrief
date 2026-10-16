@@ -273,3 +273,13 @@ jobs:
           publish_branch: gh-pages
           keep_files: false  # we restored everything above, so a clean publish is fine
           commit_message: 'daily: report for ${{ github.run_id }}'
+          
+      - name: Notify via PushPlus
+        if: success()
+        env:
+          PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+          REPORT_URL: https://maolovefang.github.io/MyDailyBrief/
+        run: |
+          curl -s -X POST "https://www.pushplus.plus/send" \
+            -H "Content-Type: application/json" \
+            -d "{\"token\":\"$PUSHPLUS_TOKEN\",\"title\":\"MyDailyBrief 日报已生成\",\"content\":\"<p>日报已生成，点击查看：</p><p><a href='$REPORT_URL'>打开日报</a></p>\",\"template\":\"html\"}"
